@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rhys Elliott | Godot Project</title>
+    <link rel="stylesheet" href="Project.css?v=1.0.0">
+    <link rel="icon" type="image/x-icon" href="/Images/Icon.png">
+    <link href="prism.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <meta name="keywords" content="Rhys Elliott, Game Dev, Game Programming">
+    <meta name="description" content="Portfolio for games programmer, Rhys Elliott">
+    <meta name="author" content="Rhys Elliott">
+
+</head>
+<body>
+
+  <script src="prism.js"></script> 
+
+<div class="navbar" id="home">
+  <a href="../index.html"><h3>Rhys Elliott</h3></a>
+  <a href="../index.html#aboutme"><span>About Me</span></a>
+  <a href="../index.html#uni"><span>Main Projects</span></a>
+  <a href="../AllProjects.html"><span>All Projects</span></a> 
+  <a href="../cv.pdf"><span>CV</span></a> 
+  <a  href="../index.html#contact"><span>Contact</span></a>
+
+  <div class="dropdown">
+    <button onclick="myFunction()" class="dropbtn"></button>
+    <div id="myDropdown" class="dropdown-content">
+        <a href="../index.html#aboutme"><span>About Me</span></a>
+        <a href="../index.html#uni"><span>Main Projects</span></a>
+        <a href="../AllProjects.html"><span>All Projects</span></a> 
+        <a href="../cv.pdf"><span>CV</span></a> 
+        <a href="../index.html#personal"><span>Contact</span></a>
+    </div>
+  </div>
+</div>
+
+<video id="myVideo"  autoplay loop muted>
+    <source src="" type="video/mp4">
+    <source src="movie.ogg" type="video/ogg">
+  Your browser does not support the video tag.
+</video> 
+
+<div class="background">
+<h1>Godot Project</h1>
+
+<div class="widget">   
+  <ul class="content-tags">
+    <li class="tag">C++</li>
+    <li class="tag-blue">Godot</li>
+  </ul>
+
+<p>
+  This is an ongoing project. 
+
+</p>
+
+
+
+
+
+</div>
+</div>
+
+<p>&nbsp</p>
+
+<h4>Social Media</h4>
+<div class="social">
+  <a href="https://twitter.com/rhyselliottdev" target="_blank"><img src="../Social/twitter.png"></img></a>
+  <a href="https://github.com/rhysaelliott" target="_blank"><img src="../Social/github-mark.png"></img></a>
+  <a href="https://www.linkedin.com/in/rhys-elliott-5a9b99276/" target="_blank"><img src="../Social/LI-In-Bug.png"></img></a>
+</div>
+
+
+
+<p>&nbsp</p>
+
+<div class="bottom">
+    <p>Rhys Elliott 2023. <a href = "mailto:contact@rhyselliott.com?subject = Feedback&body = Message">contact@rhyselliott.com </a></p>
+</div>  
+
+
+<script>
+  /* When the user clicks on the button, 
+  toggle between hiding and showing the dropdown content */
+  function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+  
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+  </script>
+
+</body>
+</html>

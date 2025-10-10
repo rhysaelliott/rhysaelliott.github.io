@@ -1,0 +1,445 @@
+body {
+  background-color:  #282a36;
+   margin:0; 
+   font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+}
+
+  h1 {
+    color: #f0f0f0;
+    text-align: center;
+    font-size:30px;
+    text-shadow: 
+    -1px -1px 0 #555555, /* Subtle gray outline */
+    1px -1px 0 #555555,
+    -1px 1px 0 #555555,
+    1px 1px 0 #555555;
+  }
+  h2{
+    color:white;
+    text-align: center;
+    font-size: 30px;
+  }
+  p{
+    text-align: center;
+    text-justify: inter-word;
+    
+    padding-left: 10%;
+    padding-right: 10%;
+    color:white;
+    font-size: 17px;
+  }
+p a:link{
+    text-decoration: dotted;
+    color: #bd93f9;
+  }
+p a:visited{
+    text-decoration: dotted;
+    color: #ff79c6;
+  }
+p a:hover
+  {
+text-decoration: underline;
+  }
+      /* The about me section*/
+.aboutme {
+    overflow: hidden;
+    background-color: #44475a;
+    width: 100%; /* Full width */
+
+  }
+  .uni
+  {
+    overflow: hidden;
+    background-color: #6272a4;
+    width: 100%; /* Full width */
+
+  }
+  /* Main content */
+  .main {
+    margin-top: 30px; 
+  } 
+  
+  .left img, .middle img, .right img{
+    width:96%;
+    margin:2%;
+    max-width: 100%;
+    max-height:100%;
+    border-radius: 5px;
+    display: block;
+    overflow: hidden;
+  }
+
+
+  .left a:hover img, .middle a:hover img, .right a:hover img{
+    transform: scale(1.04);
+  }
+  .left img,.middle img, .right img {
+    transition: transform 0.3s ease; 
+  }
+
+  /* Centered text */
+.TopCentre {
+    overflow: hidden;
+    text-align:center;
+    position: absolute;
+    width:100%;
+    top:1%;
+    right:50%;
+    transform:translate(50%, 0%);
+    user-select: none;
+    background: rgb(25,32,51,0);
+  }
+  .TopCentre h1{
+    padding: 0;
+
+  }
+  
+
+
+.widget{
+  position:relative;
+  padding:10px;
+  padding-top: 0px;
+  padding-bottom:0;
+}
+.content-tags{
+  position:relative;
+  list-style: none;
+  padding: 0;
+  margin-left:0px;
+  display:flex;
+  justify-content:center;
+  overflow:hidden;
+  padding-bottom: 0;
+}
+.tag{
+  background-color: #ff5555;
+color:#f8f8f2;
+padding:5px  10px;
+margin-left: 5px;
+border-radius: 15px;
+opacity:0.9;
+position:relative;
+min-width:20px;
+}
+.tag-orange
+{
+  background-color: #ff9f45;
+  color:#f8f8f2;
+  padding:5px  10px;
+  margin-left: 5px;
+  border-radius: 15px;
+  opacity:0.9;
+  position:relative;
+  min-width:20px;
+}
+.tag-green
+{
+  background-color: #4caf50;
+  color:#f8f8f2;
+  padding:5px  10px;
+  margin-left: 5px;
+  border-radius: 15px;
+  opacity:0.9;
+  position:relative;
+  min-width:20px;
+}
+.tag-blue
+{
+  background-color: #2196f3;
+  color:#f8f8f2;
+  padding:5px  10px;
+  margin-left: 5px;
+  border-radius: 15px;
+  opacity:0.9;
+  position:relative;
+  min-width:20px;
+}
+
+
+.bottom {
+  background-color: #21222c;
+  overflow: hidden;
+
+  bottom: 0;
+  width: 100%;
+  height:5%;
+}
+
+.container {
+  position:relative;
+  height: 100%; 
+  width:80%;
+  margin:0 auto;
+  text-align: center;
+  }
+.left, .middle, .right {display: inline-block;   border-radius: 5px;  vertical-align: top; font-size: 12px;}
+.left {
+position:relative;
+    width: 25%; 
+    margin: 2%;
+    margin-top:2%;
+    background: #3b4252;
+    overflow:hidden;
+    min-width: 250px;
+}
+.middle {
+    position:relative;
+    width: 25%; 
+    margin: 2%;
+    margin-top:2%;
+    background: #3b4252;
+    overflow:hidden;
+    min-width: 250px;
+}
+.right {
+    position:relative;
+    width: 25%; 
+    margin: 2%;
+    margin-top:2%;
+    background: #3b4252;
+    overflow:hidden;
+    min-width: 250px;
+}
+.video-container {
+  width: 100%;
+  position: relative;
+  
+}
+
+.video-container video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform:scale(2.0);
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+  min-height: 100%;
+  
+}
+
+.video-container::before {
+  content: "";
+  display: block;
+  padding-top: 25%; /* Set the height based on the desired aspect ratio */
+
+}
+
+
+h3{
+  text-align: center;
+  vertical-align: middle;
+  margin:0;
+  font-size:xx-large;
+  font-weight: bold;
+}
+
+.social {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  max-width: 100%;
+  max-height:70px;
+  }
+  
+  .social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100px;
+  max-height: 100px;
+  overflow: hidden;
+  position: relative;
+
+  }
+  .social img{
+    border-radius: 10%;
+padding:100%;
+  }
+  .social a img{
+    transform: scale(0.05);
+  }
+
+  .social :hover img {
+    background:rgb(255,255,255,0.2);
+  }
+
+
+  /* The navigation bar */
+  .navbar {
+    overflow: hidden;
+    background-color: rgb(68, 71, 90,0.8);
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    width: 100%; /* Full width */
+    cursor:pointer;
+    z-index: 1;
+    margin:0;
+    
+  }
+
+  
+  .navbar a h3 {
+
+    display: table-cell;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 4px 16px;
+    text-decoration: none;
+    vertical-align: middle;
+    font-size: 34px;
+  }
+
+  /* Change background on mouse-over */
+  .navbar a :hover {
+    background: #ddd; 
+    color: black;
+    z-index: 99;
+  }
+  .navbar a span {
+    display: none;
+        }
+
+  .dropbtn {
+
+    padding: 8px;
+    border: none;
+    cursor: pointer;
+    background: url(menu.png);
+    width:50px;
+    height:50px;
+  }
+  .dropbtn:hover{
+background: url(menu-light.png);
+  }
+
+  
+  .dropdown {
+    float: right;
+    position: relative;
+    z-index: 2;
+  }
+  
+/* Dropdown content */
+.dropdown-content {
+  display: none;
+  position: fixed;
+  background-color: #282a36; /* Dracula background color */
+  min-width: 160px;
+  overflow: auto;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  right: 0;
+}
+
+/* Dropdown content links */
+.dropdown-content a span {
+  color: #f8f8f2; /* Dracula light text color */
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Dropdown link hover effect */
+.dropdown a:hover {
+  background-color: #44475a; /* Dracula dark shade for hover */
+  color: #f8f8f2; /* Ensure the text color is visible */
+}
+  
+  .show {display: block;  }
+
+
+  @media screen and (min-width: 500px) {
+
+    .video-container {
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      transform:scale(1.6);
+    }
+  }
+
+
+
+@media screen and (min-width: 960px) {
+  /* The navigation bar */
+  .navbar {
+    overflow: hidden;
+    background-color: rgb(68, 71, 90,0.8);
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    width: 100%; /* Full width */
+    cursor:pointer;
+    z-index: 1;
+    margin:0;
+    
+  }
+
+  /* Links inside the navbar */
+  .navbar a {
+
+    display: table-cell;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 4px 16px;
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  /* Change background on mouse-over */
+  .navbar a:hover {
+    background: #ddd;
+    color: black;
+    z-index: 99;
+  }
+
+      /* Links inside the navbar */
+      .navbar a span {
+        display:inherit;
+            }
+
+  .dropbtn {
+display: none;
+  }
+  
+  .dropbtn:hover, .dropbtn:focus {
+display: none;
+  }
+  
+  .dropdown {
+display: none;
+  }
+  
+  .dropdown-content {
+    display: none;
+  }
+  
+  .dropdown-content a {
+display: none;
+  }
+  
+  .dropdown a:hover {display: none;}
+  .show {display: none;}
+
+  .video-container {
+    transform: scale(1.0);
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .video-container video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: auto;
+  }
+  
+  .video-container::before {
+    content: "";
+    display: block;
+    padding-top: 25%; /* Set the height based on the desired aspect ratio */
+  }
+}
+    

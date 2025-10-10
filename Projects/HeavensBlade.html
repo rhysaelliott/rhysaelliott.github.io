@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rhys Elliott | Heaven's Blade</title>
+    <link rel="stylesheet" href="Project.css?v=1.0.0">
+    <link rel="icon" type="image/x-icon" href="/Images/Icon.png">
+    <link href="prism.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <meta name="keywords" content="Rhys Elliott, Game Dev, Game Programming">
+    <meta name="description" content="Portfolio for games programmer, Rhys Elliott">
+    <meta name="author" content="Rhys Elliott">
+
+</head>
+<body>
+
+  <script src="prism.js"></script> 
+
+<div class="navbar" id="home">
+  <a href="../index.html"><h3>Rhys Elliott</h3></a>
+  <a href="../index.html#aboutme"><span>About Me</span></a>
+  <a href="../index.html#uni"><span>Main Projects</span></a>
+  <a href="../AllProjects.html"><span>All Projects</span></a> 
+  <a href="../cv.pdf"><span>CV</span></a> 
+  <a  href="../index.html#contact"><span>Contact</span></a>
+
+  <div class="dropdown">
+    <button onclick="myFunction()" class="dropbtn"></button>
+    <div id="myDropdown" class="dropdown-content">
+        <a href="../index.html#aboutme"><span>About Me</span></a>
+        <a href="../index.html#uni"><span>Main Projects</span></a>
+        <a href="../AllProjects.html"><span>All Projects</span></a> 
+        <a href="../cv.pdf"><span>CV</span></a> 
+        <a href="../index.html#personal"><span>Contact</span></a>
+    </div>
+  </div>
+</div>
+
+<video id="myVideo"  autoplay loop muted>
+    <source src="Videos/test2.mp4" type="video/mp4">
+    <source src="movie.ogg" type="video/ogg">
+  Your browser does not support the video tag.
+</video> 
+
+<div class="background">
+<h1>Heaven's Blade</h1>
+
+<div class="widget">   
+  <ul class="content-tags">
+    <li class="tag">C#</li>
+    <li class="tag">PHP</li>
+    <li class="tag-green">Unity</li>
+    <li class="tag-orange">MySQL</li>
+  </ul>
+
+<p>Heaven's Blade is a 2D platformer prototype with a focus on speed and movement that I made for uni over the course of six weeks. The prototype includes an online leaderboard 
+  and many  features to create an interesting character controller. The online leaderboard was built using PHP and MySQL which took up the majority of development time.</p>
+
+
+
+<h2>Character Controller</h2>
+<p>For this prototype, I had the goal of creating a character controller that had considerable weight to it and felt like it carried momentum alongside giving the player plenty 
+  of movement options to combine and master. After some research and finding inspiration from a variety of other character controllers I decided to implement the following: 
+  <b>variable fall speed</b>, <b>walljump</b>, <b>maximum terminal velocity</b> and <b>airdashing</b>. </p>
+  <div class="youtube"><iframe width="560" height="315" src="https://www.youtube.com/embed/3xocODAJPD0?si=cmSdLFDDMAGQwzQd" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> </div>
+
+   <h2>Online Leaderboard</h2>
+<p>The goal for this prototype was to create an experience which the player could master and improve at. I felt that there needed to be some measure of improvement and also that 
+  some form of competition would aid this design goal so I decided to implement an online leaderboard using <b>Unity's networking library</b>, <b>PHP</b> and <b>MySQL</b>. 
+</p>
+<p>The first thing I needed to do was create a PHP script and find somewhere to host it. I decided on 000webhost as this allowed me to host the PHP files and SQL database for free.
+  I began by creating the database which I would then write my PHP script based off of and access with a C# script in Unity.
+</p>
+<img src="Images/SQL.png"></img>
+
+<p>I had never written any PHP at this point and I did not have enough time to begin learning from the ground up so I created a script by bringing together different specific aspects of the
+language and this was the result:
+</p>
+  <pre>
+    <code class="language-php line-numbers prism-okaidia">
+      // Define the database to connect to
+      define("DBHOST", "localhost");
+      define("DBNAME", "xxxxx");
+      define("DBUSER", "xxxxx");
+      define("DBPASS", "xxxxx");
+      
+      // Connect to the database
+      $connection = new mysqli(DBHOST, DBUSER, DBPASS, DBNAME);
+      
+      if (isset($_POST['retrieve_leaderboard']))
+      {
+          // Create the query string
+          $sql = "SELECT name, MIN(score) as score FROM Highscores GROUP BY name ORDER BY score LIMIT 10";
+      
+          // Execute the query
+          $result = $connection->query($sql);
+          $num_results = $result->num_rows;
+      
+          // Loop through the results and print them out, using "\n" as a delimiter
+          for ($i = 0; $i < $num_results; $i++) 
+          {
+              if (!($row = $result->fetch_assoc()))
+                  break;
+              echo $row["name"];
+              echo "\n";
+              echo $row["score"];
+              echo "\n";
+          }
+      
+          $result->free_result();
+      }
+      
+      elseif (isset($_POST['post_leaderboard']))
+      {
+          // Get the user's name and store it
+          $name = mysqli_escape_string($connection, $_POST['name']);
+          $name = filter_var($name, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+          // Get the user's score and store it
+          $score = $_POST['score'];
+      
+          // Check if a record with the same name exists
+          $existing_record = $connection->query("SELECT * FROM Highscores WHERE name = '$name'")->fetch_assoc();
+      
+          if (!$existing_record) {
+              // Insert the new record
+              $statement = $connection->prepare("INSERT INTO Highscores (name, score) VALUES (?, ?)");
+              $statement->bind_param("si", $name, $score);
+              $statement->execute();
+              $statement->close();
+          } elseif ($existing_record && $existing_record["score"] >= $score) {
+              // Delete the existing record with a higher score
+              $connection->query("DELETE FROM Highscores WHERE name = '$name' AND score < $score");
+              // Insert the new record
+              $statement = $connection->prepare("INSERT INTO Highscores (name, score) VALUES (?, ?)");
+              $statement->bind_param("si", $name, $score);
+              $statement->execute();
+              $statement->close();
+          }
+      }
+      // Close the database connection
+      $connection->close();   
+    </code>
+  </pre>
+  <p>I then created a Unity networking script in order to access the PHP script and the database. After adding UI elements and other structure in Unity I was left with this result.
+  </p>
+  <img src="Images/leaderboard.png"></img>
+
+  <h2>Who Did What?</h2>
+  <p>Original Framework by <a href="https://www.staffs.ac.uk/"></a>Staffs Uni</p>
+  <p><a href="https://assetstore.unity.com/packages/2d/characters/gothicvania-cemetery-120509">GothicVania Cemetary</a> by Ansimuz</p>
+  <p><a href="https://assetstore.unity.com/packages/2d/characters/gothicvania-town-101407">GothicVania Town</a> by Ansimuz</p>
+  <p><a href="https://assetstore.unity.com/packages/2d/environments/medieval-pixel-art-asset-free-130131">Medievil Pixel Art</a> by Blackspire</p>
+  <p><a href="https://assetstore.unity.com/packages/2d/characters/monsters-creatures-fantasy-167949">Monster Creatures Fantasy</a> by Luiz Melo</p>
+  <p><a href="https://assetstore.unity.com/packages/2d/environments/pixel-art-platformer-village-props-166114">Village Props</a> by Cainos</p>
+
+  <h2>When Was it Made?</h2>
+  <p>The prototype was worked on from February 2023 to March 2023 for the Rapid Games Prototyping module at Staffs Uni.</p>
+  <h2>What Went Well?</h2>
+  <p>I think my implementation of the online leaderboard was well done and I am proud that I was able to implement this into a project as well as other things and have it make sense
+    be relatively polished given the time I had and the need to work on other projects simoultaneously. I am also pleased that I was able to realise some part of the idea I had for 
+    the character controller and I believe I learnt a lot about commons techniques to make platformers feel good to play through the process of making the character controller.
+  </p>
+  <h2>What Could Be Better?</h2>
+  <p>With the time I had I chose to dedicate towards the player character's movement and the online leaderboard. This left me with less time to create levels, enemies and mechanics;
+    I think these are easily the areas where the prototype lacks the most and it leads to the game not being the most fun because there are not interesting challenges to try and 
+    completely faster or more precisely. If I had more time I would properly consider the enemy, mechanic and level design and more greatly flesh out this area of the game.
+  </p>
+
+
+
+</div>
+</div>
+
+<p>&nbsp</p>
+
+<h4>Social Media</h4>
+<div class="social">
+  <a href="https://twitter.com/rhyselliottdev" target="_blank"><img src="../Social/twitter.png"></img></a>
+  <a href="https://github.com/rhysaelliott" target="_blank"><img src="../Social/github-mark.png"></img></a>
+  <a href="https://www.linkedin.com/in/rhys-elliott-5a9b99276/" target="_blank"><img src="../Social/LI-In-Bug.png"></img></a>
+</div>
+
+
+
+<p>&nbsp</p>
+
+<div class="bottom">
+    <p>Rhys Elliott 2023. <a href = "mailto:contact@rhyselliott.com?subject = Feedback&body = Message">contact@rhyselliott.com </a></p>
+</div>  
+
+
+<script>
+  /* When the user clicks on the button, 
+  toggle between hiding and showing the dropdown content */
+  function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+  
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+  </script>
+
+</body>
+</html>

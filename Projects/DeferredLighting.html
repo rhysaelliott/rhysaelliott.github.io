@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rhys Elliott | D3D11 Projects</title>
+    <link rel="stylesheet" href="Project.css?v=1.0.0">
+    <link rel="icon" type="image/x-icon" href="/Images/Icon.png">
+    <link href="prism.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <meta name="keywords" content="Rhys Elliott, Game Dev, Game Programming">
+    <meta name="description" content="Portfolio for games programmer, Rhys Elliott">
+    <meta name="author" content="Rhys Elliott">
+
+</head>
+<body>
+
+  <script src="prism.js"></script> 
+
+<div class="navbar" id="home">
+  <a href="../index.html"><h3>Rhys Elliott</h3></a>
+  <a href="../index.html#aboutme"><span>About Me</span></a>
+  <a href="../index.html#uni"><span>Main Projects</span></a>
+  <a href="../AllProjects.html"><span>All Projects</span></a> 
+  <a href="../cv.pdf"><span>CV</span></a> 
+  <a  href="../index.html#contact"><span>Contact</span></a>
+
+  <div class="dropdown">
+    <button onclick="myFunction()" class="dropbtn"></button>
+    <div id="myDropdown" class="dropdown-content">
+        <a href="../index.html#aboutme"><span>About Me</span></a>
+        <a href="../index.html#uni"><span>Main Projects</span></a>
+        <a href="../AllProjects.html"><span>All Projects</span></a> 
+        <a href="../cv.pdf"><span>CV</span></a> 
+        <a href="../index.html#personal"><span>Contact</span></a>
+    </div>
+  </div>
+</div>
+
+<video id="myVideo"  autoplay loop muted>
+    <source src="Videos/deferred.mp4" type="video/mp4">
+    <source src="movie.ogg" type="video/ogg">
+  Your browser does not support the video tag.
+</video> 
+
+<div class="background">
+  <h1>Deferred Lighting Project</h1>
+  
+  <div class="widget">   
+    <ul class="content-tags">
+      <li class="tag">C++</li>
+      <li class="tag">HLSL</li>
+      <li class="tag-blue">D3D11</li>
+      <li class="tag-green">Render Doc</li>
+    </ul>
+  
+  <p>
+    This project was completed as part of the 'Advanced Real-Time Rendering module' at the <a href="https://www.staffs.ac.uk/">University of Staffordshire</a>. 
+    The primary goal of this project was to implement <b>deferred lighting</b> as well as <b>normal mapping</b> and a variety of post-processing effects 
+    including <b>depth of field</b>, <b>sharpness</b>, <b>chromatic abberation</b> and other <b>colourspace effects</b>.
+  </p>
+  <p>A demo of the renderer can be seen below: </p>
+  <div class="youtube"><iframe width="560" height="315" src="https://www.youtube.com/embed/kkKQm1RbgtA?si=EkBoTSoTwXu9iEEX" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> </div>
+  
+<h2>GBuffer</h2>
+<p>A GBuffer is essential for deferred rendering. The structure of the GBuffer is dependant on the exact requirements of the solution. For mine, I wanted to support normal mapping and 
+  material properties such as individual specularity values. Additionally, I wanted to avoid requiring an additional texture for world position as this would require additional draw calls 
+  for each object to be rendered. As such, when world position was needed in lighting calculations, I made use of the depth buffer and simply unpacked the data. This also saves an additional texture read.
+
+</p>
+<p>One of my aims was to use a render of the scene as the albedo texture for some objects. I also wanted this render to be lit and for the object using the render as an albedo to be lit. 
+  This necesitated that I compute lighting for some objects multiple times. 
+</p>
+<p>The structure of my GBuffer can be seen below: </p>
+<img src="Images/gbuffer.png">
+
+<h2>Post-Processing</h2>
+<p>In order to create a depth of field effect, the rendered scene must be blurred. For this, I used a Gaussian Blur shader that operates on a half resolution texture of the rendered scene. 
+  This reduces the computational expense of the blur effect and also creates a more exagerated blur with fewer passes. 
+</p>
+  
+  <pre>
+    <code class="language-hlsl line-numbers prism-okaidia">
+      //main post Post-Processing
+      float depth = depthTx.Sample(samLinear, IN.Tex).r;
+
+      depth = (depth - 0.99f) * 100.f;
+      float blurFactor = GetBlurFactor(depth);
+      
+      
+      float2 rOffset = float2(0.005f, 0.005f); 
+      float2 gOffset = float2(-0.002f, -0.002f); 
+      float2 bOffset = float2(0.003f, 0.003f);
+  
+    
+      float2 vecFromCentre = IN.Tex - float2(0.5f, .5f);
+      float distanceFromCentre = length(vecFromCentre);
+      
+      float tex1r = tx1.Sample(samLinear, saturate(IN.Tex + rOffset * distanceFromCentre * abberationStrength)).r;
+      float tex1g = tx1.Sample(samLinear, saturate(IN.Tex + gOffset * distanceFromCentre * abberationStrength)).g;
+      float tex1b = tx1.Sample(samLinear, saturate(IN.Tex + bOffset * distanceFromCentre * abberationStrength)).b;
+      
+      float tex2r = tx2.Sample(samLinear, saturate(IN.Tex + rOffset * distanceFromCentre * abberationStrength)).r;
+      float tex2g = tx2.Sample(samLinear, saturate(IN.Tex + gOffset * distanceFromCentre * abberationStrength)).g;
+      float tex2b = tx2.Sample(samLinear, saturate(IN.Tex + bOffset * distanceFromCentre * abberationStrength)).b;
+  
+      float4 tex1 = float4(tex1r, tex1g, tex1b, 1.0f);
+      float4 tex2 = float4(tex2r, tex2g, tex2b, 1.0f);
+      
+      float4 finalColor = lerp(tex1, tex2, saturate(blurFactor));
+      
+      //saturation
+      float luminance = finalColor.x*0.2125+finalColor.y*0.7153+finalColor.z*0.07121;
+      float3 saturationColor = lerp(float3(luminance, luminance,luminance), finalColor.xyz, float3(saturation,saturation,saturation));
+     
+      //contrast
+      float3 contrastColor = contrast * (saturationColor - float3(0.5f, 0.5f, 0.5f)) + float3(0.5f, 0.5f, 0.5f) + brightness;
+  
+      //apply contrast and brightness
+      finalColor.xyz = contrastColor;
+      
+      //gama correction
+      finalColor.xyz = pow(finalColor, 1.2);
+  
+      if(useACES==1)
+      {
+          finalColor.xyz = ACESFilm(finalColor.xyz);
+      }
+      
+    return finalColor;
+
+    //sharpness
+    float width, height;
+    
+    tx1.GetDimensions(width, height);
+    float2 texelSize = float2(1.0 / width, 1.0 / height);
+    float2 offsets[9] =
+    {
+        float2(-texelSize.x, -texelSize.y), 
+        float2(0, -texelSize.y), 
+        float2(texelSize.x, -texelSize.y), 
+        float2(-texelSize.x, 0), 
+        float2(0, 0), 
+        float2(texelSize.x, 0), 
+        float2(-texelSize.x, texelSize.y), 
+        float2(0, texelSize.y),
+        float2(texelSize.x, texelSize.y) 
+    };
+
+    float4 sharpenedColor = float4(0, 0, 0, 0);
+    for (int i = 0; i < 9; i++)
+    {
+        sharpenedColor += tx1.Sample(samLinear, IN.Tex + offsets[i]) * kernel[i];
+    }
+
+    float4 originalColor = tx1.Sample(samLinear, IN.Tex);
+    float4 finalColor = lerp(originalColor, sharpenedColor, sharpness);
+    
+	return finalColor;
+  
+    </code>
+  </pre>
+  
+
+
+  
+  
+  
+    <h2>Who Did What?</h2>
+    <p>ImGUI File Browser by <a href="https://github.com/AirGuanZ/imgui-filebrowser">AirGuanZ</a></p>
+    <h2>When Was it Made?</h2>
+    <p>This project was worked on from December 2024 - February 2025</p>
+    <h2>What Went Well?</h2>
+    <p>
+      My impelementation of deferred lighting achieves everything that I wished to achieve. It is flexible in nature, shown by the fact that any number of additional lights and objects can 
+      be added to the scene and behave properly. 
+    </p>
+    <h2>What Could Be Better?</h2>
+    <p>
+      The project would benefit from the implementation of Physically Based Shading and GLTF loading.
+       However, I have previously implemented both of these in my <a href="VolumetricClouds.html"><b>Vulkan Cloud Volumetrics Project</b></a>.
+      Additionally, I could have implemented more robust depth of field techniques and included more material information in my GBuffer.
+    </p>
+  
+  
+  
+  </div>
+  </div>
+
+
+
+<p>&nbsp</p>
+<p>&nbsp</p>
+<p>&nbsp</p>
+<p>&nbsp</p>
+<p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p><p>&nbsp</p>
+
+<h4>Social Media</h4>
+<div class="social">
+  <a href="https://twitter.com/rhyselliottdev" target="_blank"><img src="../Social/twitter.png"></img></a>
+  <a href="https://github.com/rhysaelliott" target="_blank"><img src="../Social/github-mark.png"></img></a>
+  <a href="https://www.linkedin.com/in/rhys-elliott-5a9b99276/" target="_blank"><img src="../Social/LI-In-Bug.png"></img></a>
+</div>
+
+
+
+<p>&nbsp</p>
+
+<div class="bottom">
+    <p>Rhys Elliott 2023. <a href = "mailto:contact@rhyselliott.com?subject = Feedback&body = Message">contact@rhyselliott.com </a></p>
+</div>  
+
+
+<script>
+  /* When the user clicks on the button, 
+  toggle between hiding and showing the dropdown content */
+  function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+  
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+  </script>
+
+</body>
+</html>

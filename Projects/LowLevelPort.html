@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rhys Elliott | Low-Level Optimisation and PS4 Porting</title>
+    <link rel="stylesheet" href="Project.css?v=1.0.0">
+    <link rel="icon" type="image/x-icon" href="/Images/Icon.png">
+    <link href="prism.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <meta name="keywords" content="Rhys Elliott, Game Dev, Game Programming">
+    <meta name="description" content="Portfolio for games programmer, Rhys Elliott">
+    <meta name="author" content="Rhys Elliott">
+
+</head>
+<body>
+
+  <script src="prism.js"></script> 
+
+<div class="navbar" id="home">
+  <a href="../index.html"><h3>Rhys Elliott</h3></a>
+  <a href="../index.html#aboutme"><span>About Me</span></a>
+  <a href="../index.html#uni"><span>Main Projects</span></a>
+  <a href="../AllProjects.html"><span>All Projects</span></a> 
+  <a href="../cv.pdf"><span>CV</span></a> 
+  <a  href="../index.html#contact"><span>Contact</span></a>
+
+  <div class="dropdown">
+    <button onclick="myFunction()" class="dropbtn"></button>
+    <div id="myDropdown" class="dropdown-content">
+        <a href="../index.html#aboutme"><span>About Me</span></a>
+        <a href="../index.html#uni"><span>Main Projects</span></a>
+        <a href="../AllProjects.html"><span>All Projects</span></a> 
+        <a href="../cv.pdf"><span>CV</span></a> 
+        <a href="../index.html#personal"><span>Contact</span></a>
+    </div>
+  </div>
+</div>
+
+<video id="myVideo"  autoplay loop muted>
+    <source src="Videos/lowlevel.mp4" type="video/mp4">
+    <source src="movie.ogg" type="video/ogg">
+  Your browser does not support the video tag.
+</video> 
+
+<div class="background">
+<h1>Low-Level Optimisation and PS4 Porting</h1>
+
+<div class="widget">   
+  <ul class="content-tags">
+    <li class="tag">C++</li>
+    <li class="tag-blue">PS4</li>
+    <li class="tag-blue">ImGUI</li>
+
+  </ul>
+
+<p>This project focussed on <b>low-level optimisation</b> in <b>C++</b>. I implemented a custom <b>memory manager, memory pools </b> and <b>multithreading</b> via a <b>quadtree</b>. 
+  The project was also ported to <b>PS4</b> where the same multihreaded functionality was recreated.
+</p>
+
+
+
+<div class="youtube"><iframe width="560" height="315" src="https://www.youtube.com/embed/u2Rpe-W_KpI?si=8fYSqz-DEeAuv3W8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> </div>
+
+
+
+<h2>Memory Management</h2>
+
+<p>Heap memory is managed in the project using two primary mechanisms. Firstly, <b>new</b> and <b>delete</b> have been overwritten. This allows for more information to be stored inside of a memory 
+manager class and it allows the use of the secondary mechanism: memory pools. Memory pools have memory allocated to them on initialisation and can provide a chunk of that memory to 
+anything that requests it, hence avoiding expensive runtime memory allocation. By overwriting new, the user can be provided this chunk of memory without having to interact directly with the 
+memory manager. </p>
+
+<p>The overwritten new and delete operators can be seen below: </p>
+
+<pre>
+	<code class="language-cpp line-numbers prism-okaidia">
+  
+	  void* operator new (size_t size, Tracker*& pTracker, TrackedClasses className)
+  {
+	  std::lock_guard<std::mutex> lock(*MemoryManager::memoryMutex);
+	  size_t nRequestedBytes = size + sizeof(Header) + sizeof(Footer);
+	  char* pMem;
+	  if (MemoryManager::memory_pool_mode)
+	  {
+		  if (MemoryManager::s_pMainMemoryPool == nullptr)
+		  {
+			  MemoryManager::s_pMainMemoryPool = (MemoryPool*)malloc(sizeof(MemoryPool));
+			  MemoryManager::s_pMainMemoryPool->InitMemoryPool();
+		  }
+		  pMem =(char*)MemoryManager::s_pMainMemoryPool->AllocMemory(nRequestedBytes);
+		  if (pMem == nullptr)
+		  {
+			  pMem = (char*)malloc(nRequestedBytes);
+		  }
+	  }
+	  else
+	  {
+		  pMem = (char*)malloc(nRequestedBytes);
+	  }
+	  Header* pHeader = (Header*)pMem;
+  
+	  void* pFooterAddr = pMem + sizeof(Header) + size;
+	  Footer* pFooter = (Footer*)pFooterAddr;
+	  void* pStartMemBlock = pMem + sizeof(Header);
+  
+	  
+		  if (pTracker == nullptr)
+		  {
+			  char* pTrackerMem = (char*)malloc(sizeof(Tracker));
+			  pTracker = (Tracker*)pTrackerMem;
+			  pTracker->Init();
+			  pTracker->className = className;
+			  pTracker->firstHeader = pHeader;
+		  }
+  
+		  pHeader->size = size;
+		  pHeader->m_Tracker = pTracker;
+		  pHeader->m_Tracker->AddBytesAllocated(nRequestedBytes);
+		  pHeader->checkValue = 0xDEADC0DE;
+		  pHeader->next = nullptr;
+  
+		  if (pHeader->m_Tracker->firstHeader == nullptr)
+		  {
+			  pHeader->m_Tracker->firstHeader = pHeader;
+		  }
+  
+		  if (pHeader->m_Tracker->latestHeader != nullptr)
+		  {
+			  pHeader->m_Tracker->latestHeader->next = pHeader;
+		  }
+		  pHeader->m_Tracker->latestHeader = pHeader;
+  
+		  pFooter->checkValue = 0xDEADBEEF;
+	  
+  
+	  return pStartMemBlock;
+  }
+  
+  void operator delete(void* pMem)
+  {
+	  std::lock_guard<std::mutex> lock(*MemoryManager::memoryMutex);
+	  if (pMem == nullptr) return;
+  
+	  Header* pHeader =	(Header*)((char*)(pMem) - sizeof(Header));
+	  Footer* pFooter = (Footer*)((char*)(pMem) + pHeader->size);
+  
+	  if (pHeader->m_Tracker != nullptr && (pHeader->checkValue != 0xDEADC0DE || pFooter->checkValue != 0xDEADBEEF))
+	  {
+		  std::cout << "Bad allocation\n";
+		  return;
+	  }
+  
+	  if (pHeader->m_Tracker != nullptr) {
+		  if (pHeader->m_Tracker->firstHeader == pHeader) {
+			  pHeader->m_Tracker->firstHeader = pHeader->next;
+			  if (pHeader->next == nullptr) {
+				  pHeader->m_Tracker->latestHeader = nullptr;
+			  }
+		  }
+		  else {
+			  Header* prevHeader = nullptr;
+			  Header* currentHeader = pHeader->m_Tracker->firstHeader;
+  
+			  while (currentHeader && currentHeader != pHeader) {
+				  prevHeader = currentHeader;
+				  currentHeader = currentHeader->next;
+			  }
+			  if (currentHeader == nullptr) {
+				  std::cout << "header not found in tracker\n";
+				  return;
+			  }
+  
+			  prevHeader->next = pHeader->next;
+			  if (pHeader == pHeader->m_Tracker->latestHeader) {
+				  pHeader->m_Tracker->latestHeader = prevHeader;
+			  }
+		  }
+		  pHeader->m_Tracker->RemoveBytesAllocated(pHeader->size + sizeof(Header) + sizeof(Footer));
+	  }
+	  
+	  if (MemoryManager::memory_pool_mode && MemoryManager::s_pMainMemoryPool->ReturnMemory(pHeader)) {
+		  return;
+	  }
+	  safeFree(pHeader);
+  }
+  
+	</code>
+  </pre>
+
+<p>The memory manager also allows us to check the integrity of the memory by walking the heap as can be seen below. As we go from one chunk of memory to the other, we are able to check the integrity 
+	via ensuring no check values have been corrupted. 
+</p>
+<img src="Images/walktheheap.png">
+<p>When the memory does become corrupt the memory manager is able to detect it, as seen below: </p>
+<img src="Images/badalloc.png">
+
+
+
+
+<h2>Quadtree & Multithreading</h2>
+
+<p>In order to optimise the collisions taking place per frame, I implemented a quadtree algorithm which allows for the collisions in any given quadrant of that quadtree to be performed on their own thread. 
+The quadtree takes in a minimum quadrant size which it uses to dynamically create the quadrants when needed. The quadtree is generated recursively via the function below: 
+</p>
+
+<pre>
+	<code class="language-cpp line-numbers prism-okaidia">
+		void Quadtree::BuildTree()
+		{
+			if (m_objects.size() <= 1) return;
+		
+			float dimensionsX = m_region.m_maxX - m_region.m_minX;
+			float dimensionsZ = m_region.m_maxZ - m_region.m_minZ;
+		
+			if (dimensionsX < MIN_SIZE && dimensionsZ < MIN_SIZE) return;
+		
+			float halfX = dimensionsX / 2.f;
+			float halfZ = dimensionsZ / 2.f;
+		
+			float centreX = m_region.m_minX + halfX;
+			float centreZ = m_region.m_minZ + halfZ;
+		
+			BoundingBox quadrant[4];
+			quadrant[0] = BoundingBox(m_region.m_minX, m_region.m_minZ, centreX, centreZ);
+			quadrant[1] = BoundingBox(centreX, m_region.m_minZ, m_region.m_maxX, centreZ);
+			quadrant[2] = BoundingBox(centreX, centreZ, m_region.m_maxX, m_region.m_maxZ);
+			quadrant[3] = BoundingBox(m_region.m_minX, centreZ, centreX, m_region.m_maxZ);
+		
+			std::vector<ColliderObject*> octList[4];
+			std::vector<ColliderObject*> delist;
+		
+			for (auto& obj : m_objects)
+			{
+				if (obj == nullptr)
+				{
+					continue;
+				}
+				BoundingBox objBox = BoundingBox(obj->position.x - obj->size.x, obj->position.z - obj->size.z,
+					obj->position.x + obj->size.x, obj->position.z + obj->size.z);
+				for (int i = 0; i < 4; i++)
+				{
+					if (quadrant[i].Contains(objBox))
+					{
+						octList[i].push_back(obj);
+						delist.push_back(obj);
+						break;
+					}
+				}
+			}
+		
+			for (auto& obj : delist)
+			{
+				if (obj == nullptr) continue;
+				m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), obj), m_objects.end());
+			}
+			delist.clear();
+			
+		
+			for (int i = 0; i < 4; i++)
+			{
+				if (!octList[i].empty())
+				{
+					m_children[i] = CreateNode(quadrant[i], octList[i]);
+					m_children[i]->BuildTree();
+					octList[i].clear();
+				}
+			}
+		
+			m_treeBuilt = true;
+			m_treeReady = true;
+		}
+		
+  
+	</code>
+  </pre>
+
+<h2>PS4 Porting</h2>
+<p>A lot of the details regarding PS4 porting cannot be written about in explicit detail due to NDA rules; although I can still speak broadly. 
+	The primary differences between the two platforms, for the sake of this project, came in the form of the difference in underlying graphics API as well 
+	as how threads are managed. In order to successfully port the project, I wrote the relevant graphics code based on the examples provided by Sony, loaded and used 
+	the platform specific threading features. Throughout the entire porting process I had to refer to the documentation and research the hardware architecture of the 
+	PS4 in order to properly allocate memory..
+</p>
+
+
+
+
+<h2>Who Did What?</h2>
+<p>Original Framework by <a href="https://www.staffs.ac.uk/">Staffs Uni</a></p>
+
+
+<h2>When Was it Made?</h2>
+<p>This project was worked on from October 2024 - December 2024</p>
+<h2>What Went Well?</h2>
+<p>
+The memory manager is fully feature complete and works well. It does not corrupt memory and works across multiple threads.  
+</p>
+<h2>What Could Be Better?</h2>
+<p>
+The memory pools could be more complex. At current, memeory is allocated based on a compiler defined arbitrary value.
+ Additionally, the chunks of memory could be aligned properly in order to be more cache friendly. 
+ The quadtree algorithm could also be improved by taking into account edgecases, such as when a collider is in multiple quadrants at once.
+</p>
+
+
+</div>
+</div>
+
+<p>&nbsp</p>
+
+
+<div class="social">
+  <a href="https://twitter.com/rhyselliottdev" target="_blank"><img src="../Social/twitter.png"></img></a>
+  <a href="https://github.com/rhysaelliott" target="_blank"><img src="../Social/github-mark-light.png"></img></a>
+  <a href="https://www.linkedin.com/in/rhys-elliott-5a9b99276/" target="_blank"><img src="../Social/LI-In-Bug.png"></img></a>
+</div>
+
+
+
+<p>&nbsp</p>
+
+<div class="bottom">
+    <p>Rhys Elliott 2023. <a href = "mailto:contact@rhyselliott.com?subject = Feedback&body = Message">contact@rhyselliott.com </a></p>
+</div>  
+
+
+<script>
+  /* When the user clicks on the button, 
+  toggle between hiding and showing the dropdown content */
+  function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+  
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+  </script>
+
+</body>
+</html>

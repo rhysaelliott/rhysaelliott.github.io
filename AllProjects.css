@@ -1,0 +1,497 @@
+body {
+  background-color: #282a36;
+   margin:0; 
+   font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+  }
+
+  p{
+    text-align: center;
+    text-justify: inter-word;
+    padding-left: 20%;
+    padding-right: 20%;
+    color:white;
+    font-size: 16px;
+  }
+  .navbar a:link{
+    text-decoration: none;
+      }
+      .navbar a:visited
+    {
+      text-decoration: none;
+    }
+    .navbar a:hover{
+      text-decoration: none;
+    }
+  p a:link{
+    text-decoration: dotted;
+    color: #bd93f9;
+  }
+p a:visited{
+    text-decoration: dotted;
+    color: #ff79c6;
+  }
+p a:hover
+  {
+text-decoration: underline;
+  }
+
+  .background{
+    position: relative;
+    background-color: rgb(61,71,90,0.8);
+    margin: auto;
+    margin-top: 150px;
+    padding:5px  10px;
+    width:90%;
+    border-radius: 10px;
+  }
+
+  .bottom {
+    background-color: #21222c;
+    overflow: hidden;
+  
+
+    width: 100%;
+    height:5%;
+  }
+  .bottom p{
+    text-align: center;
+    margin: 0.5%;
+    vertical-align: middle;
+  }
+hr{
+  color:white;
+}
+
+h3{
+  text-align: center;
+  vertical-align: middle;
+  margin:0;
+  font-size:xx-large;
+  font-weight: bold;
+}
+
+
+
+.social {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  max-width: 100%;
+  max-height:70px;
+  }
+  
+  .social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100px;
+  max-height: 100px;
+  overflow: hidden;
+  position: relative;
+
+  }
+  .social img{
+    border-radius: 10%;
+padding:100%;
+
+  }
+  .social a img{
+    transform: scale(0.05);
+  }
+
+  .social :hover img {
+    background:rgb(255,255,255,0.2);
+  }
+
+
+
+h4{
+position: relative;
+color:white;
+text-align: center;
+z-index: 1;
+margin-top:20px;
+margin-bottom:5px;
+font-size: x-large;
+}
+
+
+
+
+  /* The navigation bar */
+  .navbar {
+    overflow: hidden;
+    background-color: rgb(68, 71, 90,0.8);
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    width: 100%; /* Full width */
+    cursor:pointer;
+    z-index: 1;
+    margin:0;
+    
+  }
+
+  
+  .navbar a h3 {
+
+    display: table-cell;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 4px 16px;
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  .dropdown:hover{
+    color: black;
+  }
+  /* Change background on mouse-over */
+  .navbar a :hover {
+    background: #ddd;
+    color: black;
+    z-index: 99;
+  }
+      .navbar a span {
+        display: none;
+            }
+
+  .dropbtn {
+
+    padding: 8px;
+    border: none;
+    cursor: pointer;
+    background: url(menu.png);
+    width:50px;
+    height:50px;
+  }
+  .dropbtn:hover
+  {
+    background: url(menu-light.png);
+  }
+  .dropbtn img{
+    width:20px;
+    margin:3px;
+    vertical-align: middle;
+    
+  }
+  
+  .dropdown {
+    float: right;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: fixed;
+    background-color: #282a36;
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    right: 0;
+  }
+  
+  .dropdown-content a span {
+    color: #f8f8f2;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown a:hover {background-color: #fff;}
+  
+  .show {display: block;  }
+
+
+
+
+  .widget   p{
+    text-align: center;
+    text-justify: inter-word;
+    padding-top:20px;
+padding:0;
+    color:white;
+    font-size: 16px;
+
+  }
+
+  h1 {
+    color: white;
+    text-align: center;
+    text-underline-position: under;
+    text-decoration: underline;
+  }
+
+  .heading{
+    position:relaticve;
+    width:100%;
+    padding-top: 1%;
+  }
+  .image{
+    right:0;
+    position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding:0%;
+  padding-right:10%;
+  padding-left: 10%;
+  
+  }
+  .image img{
+    border-radius:100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .content-tags{
+    list-style: none;
+    padding: 0;
+
+    display:flex;
+    justify-content:center;
+
+  }
+  .tag{
+    background-color: #ff5555;
+  color:#fff;
+  padding:5px  10px;
+  margin-left: 5px;
+  border-radius: 15px;
+  min-width:20px;
+  }
+
+  .tag-orange
+  {
+    background-color: #ff9f45;
+    color:#fff;
+    padding:5px  10px;
+    margin-left: 5px;
+    border-radius: 15px;
+    opacity:0.9;
+    position:relative;
+    min-width:20px;
+  }
+  .tag-green
+  {
+    background-color: #4caf50;
+    color:#fff;
+    padding:5px  10px;
+    margin-left: 5px;
+    border-radius: 15px;
+    opacity:0.9;
+    position:relative;
+    min-width:20px;
+  }
+  .tag-blue
+  {
+    background-color: #2196f3;
+    color:#fff;
+    padding:5px  10px;
+    margin-left: 5px;
+    border-radius: 15px;
+    opacity:0.9;
+    position:relative;
+    min-width:20px;
+  }
+.widget{
+  align-items: center;
+  align-content: center;
+  text-align: center;
+}
+
+  .button1{
+    background-color: rgb(0,0,155,0);
+    outline:2px solid white;
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    margin-top:1%;
+    margin-bottom:3%;
+
+    border-radius: 20px;
+    
+  }
+  
+  .button1:hover{
+    cursor:pointer;
+    background-color: white;
+    color:black;
+  }
+
+
+@media screen and (min-width: 770px){
+  
+  .widget   p{
+    text-align: left;
+    text-justify: inter-word;
+    padding-top:20px;
+    padding-left: 5%;
+    padding-right: 10%;
+    color:white;
+    font-size: 16px;
+    max-width: 50%;
+  }
+
+  h1 {
+    color: white;
+    text-align: left;
+    text-underline-position: under;
+    text-decoration: underline;
+  }
+
+  .heading{
+    position:relaticve;
+    width:30%;
+    padding-left:5%;
+    padding-top: 1%;
+  }
+  .image{
+    right:0;
+    position: absolute;
+  overflow: hidden;
+  text-align: right;
+  padding:0%;
+  padding-right:10%;
+  padding-left: 10%;
+  
+  }
+  .image img{
+    border-radius:100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .content-tags{
+    list-style: none;
+    padding: 0;
+    margin-left:5%;
+    display:flex;
+    justify-content:left;
+
+  }
+  .tag{
+    background-color: red;
+  color:#fff;
+  padding:5px  10px;
+  margin-left: 5px;
+  border-radius: 15px;
+  }
+
+  .button1{
+    background-color: rgb(0,0,155,0);
+    outline:2px solid white;
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    margin: 5%;
+    margin-top:1%;
+    margin-bottom:3%;
+    border-radius: 20px;
+  }
+  
+  .button1:hover{
+    cursor:pointer;
+    background-color: white;
+    color:black;
+  }
+  .widget{
+    align-items: center;
+    align-content: center;
+    text-align: left;
+  }
+}
+
+
+
+
+
+@media screen and (min-width: 960px) {
+  
+  /* The navigation bar */
+  .navbar {
+    overflow: hidden;
+    background-color: rgb(68, 71, 90,0.8);
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    width: 100%; /* Full width */
+    cursor:pointer;
+    z-index: 1;
+    margin:0;
+    
+  }
+
+  /* Links inside the navbar */
+  .navbar a {
+
+    display: table-cell;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 4px 16px;
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  /* Change background on mouse-over */
+  .navbar a:hover {
+    background: #ddd;
+    color: black;
+    z-index: 99;
+  }
+
+      /* Links inside the navbar */
+      .navbar a span {
+        display:inherit;
+            }
+
+  .dropbtn {
+display: none;
+  }
+  
+  .dropbtn:hover, .dropbtn:focus {
+display: none;
+  }
+  
+  .dropdown {
+display: none;
+  }
+  
+  .dropdown-content {
+    display: none;
+  }
+  
+  .dropdown-content a {
+display: none;
+  }
+  
+  .dropdown a:hover {display: none;}
+  .show {display: none;}
+
+.background{
+position: relative;
+background-color: rgb(61,71,90,0.8);
+margin: auto;
+margin-top: 150px;
+padding:5px  10px;
+width:70%;
+border-radius: 10px;
+}
+
+}
+
+
+
+
+@media screen and (min-width: 1440px) {
+.background{
+  position: relative;
+  background-color: rgb(61,71,90,0.8);
+  margin: auto;
+  margin-top: 150px;
+  padding:5px  10px;
+  width:60%;
+  border-radius: 10px;
+}
+}

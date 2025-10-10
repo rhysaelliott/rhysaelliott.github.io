@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rhys Elliott | Midnight Taxi</title>
+    <link rel="stylesheet" href="Project.css?v=1.0.0">
+    <link rel="icon" type="image/x-icon" href="/Images/Icon.png">
+    <link href="prism.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <meta name="keywords" content="Rhys Elliott, Game Dev, Game Programming">
+    <meta name="description" content="Portfolio for games programmer, Rhys Elliott">
+    <meta name="author" content="Rhys Elliott">
+
+</head>
+<body>
+
+  <script src="prism.js"></script> 
+
+<div class="navbar" id="home">
+  <a href="../index.html"><h3>Rhys Elliott</h3></a>
+  <a href="../index.html#aboutme"><span>About Me</span></a>
+  <a href="../index.html#uni"><span>Main Projects</span></a>
+  <a href="../AllProjects.html"><span>All Projects</span></a> 
+  <a href="../cv.pdf"><span>CV</span></a> 
+  <a  href="../index.html#contact"><span>Contact</span></a>
+
+  <div class="dropdown">
+    <button onclick="myFunction()" class="dropbtn"></button>
+    <div id="myDropdown" class="dropdown-content">
+        <a href="../index.html#aboutme"><span>About Me</span></a>
+        <a href="../index.html#uni"><span>Main Projects</span></a>
+        <a href="../AllProjects.html"><span>All Projects</span></a> 
+        <a href="../cv.pdf"><span>CV</span></a> 
+        <a href="../index.html#personal"><span>Contact</span></a>
+    </div>
+  </div>
+</div>
+
+<video id="myVideo"  autoplay loop muted>
+    <source src="Videos/taxi.mp4" type="video/mp4">
+    <source src="movie.ogg" type="video/ogg">
+  Your browser does not support the video tag.
+</video> 
+
+<div class="background">
+<h1>Midnight Taxi</h1>
+
+<div class="widget">   
+  <ul class="content-tags">
+    <li class="tag">Blueprint</li>
+    <li class="tag-green">UE5</li>
+    <li class="tag-orange">Collab</li>
+  </ul>
+
+<p>Midnight Taxi is a narrative focussed horror/thriller game about being a taxi driver in a suburban town in the Deep South. The game was created in UE5 and I worked on the junior
+  tech team alongside 2 other juniors and 3 seniors. We worked in Blueprint and my main tasks were creating a working SatNav system, creating multiple materials, handling save data, creating the 
+  options menu and faking physics on an actor to be more performant. 
+<a href="https://group-twenty8.itch.io/midnight-taxi" >Check it out on Itch.io!</a>
+</p>
+
+<div class="youtube"><iframe width="560" height="315" src="https://www.youtube.com/embed/UgQqs1xaiwk?si=dMfd5VwbT30Efx6l" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> </div>
+
+<h2>SatNav</h2>
+<p>My greatest responsibility came in the form of the SatNav that guides the player. Setting this up involved the use of AI blueprints, multiple materials, widgets and a 
+  heapful of math. The SatNav essentially works by having an AI agent pathfind to the next destination location in an array. The movement of the AI is evaluated on a timer to determine whether or not 
+  the current position of the AI marks a noticeable turn. If it is decided this is the case then the point is added to an array of significant points. On the same timer, the position of the taxi is checked 
+  to see if it has passed the next significant point and if it should be removed. Every few seconds this process is reset and it is also reset when a destination point is reached.
+</p>
+<p>
+  To display the points 
+  on the SatNav I overloaded the OnPaint function. In this function, the world space points have to be converted to image space and then drawing the points to the screen and connecting them by using 
+  splines. One of the greatest difficulties I faced and where much of the math lies is with making it so the taxi is always facing north in the SatNav and the roads and points rotate around it. 
+  If the camera is unlocked, then no extra math needs to be done to correct the points. However, if the camera is locked (to allow the taxi to always face north) then the points must be corrected and 
+  rotataed in the opposite direction the car is moving. 
+</p>
+<p>The material is also stylised to highlight the roads and provide contrast to the important information coloured in red. Only meshes that have a road material applied to them are rendered to the 
+  scene capture which allows for clear visual direction. Pixelisation is also applied alongside a CRT-esque warping around the edges of the screen. There is also some static noise applied. 
+</p>
+  <img src="Images/satnav.png">
+
+<h2>Window Material</h2>
+<p>The window material I created can be shaped in many ways by actions in the game. For example, it fogs up and becomes hard to see when you mess with the taxi's air conditioning, 
+  rain droplets appear on the window when it's raining and they can be gotten rid of with the window wipers and if you were to hit a pedestrian then you might see blood splattered 
+  across your windscreen. All of these effects can trigger at the same time as well. The effects are managed by a scalar in a MPC which can be altered in another blueprint to adjust 
+  how applied the effect is.
+</p>
+<p>The fog blur was done by making use of the spatial blur scene texture node and using a greyscale fogged window texture as a mask to determine how blurred an area would be.
+  The blood effect was more difficult because I initially wanted to use decals like are used for the car bonnet but decals cannot be applied to transparent materials and I couldn't 
+  play around with the opacity channel because that is how the blur functions. To solve this, I just duplicated the mesh and added a new blood splatter material to it. The rain drops 
+  effect was created by Jonah Kirtley (a senior artist on the team) using animated textures and I implemented them into the existing window material and made them affect the fog.
+</p>
+<img src="Images/fog.png">
+<img src="Images/blood.png"">
+<img src="Images/blood2.png"">
+
+<h2>Working in a Team</h2>
+<p>The team that I was assigned was filled with talented and driven people and I felt like our communication was highly productive and professional. Having never worked in such 
+  a team before, I felt like I have learnt a lot with regards to getting work done collaboratively with others. We used Jira to manage our tasks which seniors members of a 
+  discipline team would set after discussing things as an entire group and then amongst the smaller discipline teams. Teams was used to talk to eachother outside of sessions 
+  in real life which allowed us to keep track of what other people were doing. We used Github to host the project and it was set up so each discipline had a branch to push to 
+  and then there was also a general weekly branch. One of the seniors managed merges as required outside of those times too.
+</p>
+
+
+
+  <h2>Who Did What?</h2>
+  <p>Original Framework by <a href="https://www.staffs.ac.uk/"></a>Staffs Uni</p>
+
+  <p> <a href="https://www.linkedin.com/in/thomasmeere/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" >Tom Meere  </a>- Tech Senior,     </p>
+  <p><a href="https://www.linkedin.com/in/kateryna-baranovska-a5541330a" >Kat Baranovska  </a>- Tech Senior, </p>
+  <p><a href="https://arsalanahmedsyed.github.io/" >Arsalan Syed  </a>- Tech Senior, </p>
+  <p><a href="https://www.linkedin.com/in/edwardjameshill/" >Edward Hill  </a>- Tech Junior, </p>
+  <p><a href="https://www.linkedin.com/in/lucy-elliott-darling/" >Lucy Elliott-Darling  </a>- Tech Junior, </p>
+  <p><a href="https://www.linkedin.com/in/billy-masih-22307430a/" >Billy Masih  </a>- Design Senior, </p>
+  <p><a href="https://bilalpatel786.wixsite.com/bilal-patel" >Bilal Patel  </a>- Design Senior, </p>
+  <p><a href="https://www.artstation.com/jadenchhatralia" >Jaden Chhatralia  </a>- Design Junior, </p>
+  <p><a href="https://www.linkedin.com/in/michael-fadare-9a97a122a/" >Michael Fadare  </a>- Design Junior, </p>
+  <p>Harvey Lawrence - Design Junior, </p>
+  <p><a href="https://www.artstation.com/kirtleykhaos" >Jonah Kirtley  </a>- Art Senior, </p>
+  <p><a href="https://www.artstation.com/liamuk12" >Liam Powell  </a>- Art Senior, </p>
+  <p><a href="https://www.artstation.com/imthecasual" >Kasjan Sznajdrowski  </a>- Art Senior, </p>
+  <p><a href="https://www.artstation.com/artwork/392XeJ" >George King  </a>- Art Senior, </p>
+  <p><a href="https://www.artstation.com/alextzpetrov" >Alex Petrov  </a>- Art Senior, </p>
+  <p>Bobby Evans - Art Senior</p>
+  <p><a href="https://www.linkedin.com/in/sophie-baird-4381aa24b/" >Sophie Baird  </a>- Art Junior, </p>
+  <p><a href="https://www.linkedin.com/in/rafalblama/?original_referer=https%3A%2F%2Fgroup-twenty8%2Eitch%2Eio%2F&originalSubdomain=uk" >Rafel Blama  </a>-  Art Junior, </p>
+   <p><a href="https://www.linkedin.com/in/jonathan-wareing-698b331b7/" >Jonathan Wareing  </a>- Art Junior, </p>
+  <p><a href="https://www.linkedin.com/in/oliver-nielsen-57845930a/">Oliver Nielson </a>- Animation Junior </p>
+
+
+  <h2>When Was it Made?</h2>
+  <p>This project was worked on from the beginning of March until mid May 2024.</p>
+  <h2>What Went Well?</h2>
+  <p>
+    As a team we were able to create a complete and compelling vertical slice of a game. Speaking of my work, I think that I created 
+    complex features that enhance the experience of the game. I also spent a lot of time optimising my features to ensure that they 
+    did not slow the game down significantly as they once did. 
+  </p>
+  <h2>What Could Be Better?</h2>
+  <p>
+    I don't believe a lot could have gone better, I think the team was well organised and that I completed plenty of high quality work. 
+    The only thing that would come to mind was in the days approaching the deadline there were last minute ideas that the team decided 
+    to try and add but this led to oversights in other areas and some crunch. 
+  </p>
+
+
+
+</div>
+</div>
+
+<p>&nbsp</p>
+
+<h4>Social Media</h4>
+<div class="social">
+  <a href="https://twitter.com/rhyselliottdev" target="_blank"><img src="../Social/twitter.png"></img></a>
+  <a href="https://github.com/rhysaelliott" target="_blank"><img src="../Social/github-mark-light.png"></img></a>
+  <a href="https://www.linkedin.com/in/rhys-elliott-5a9b99276/" target="_blank"><img src="../Social/LI-In-Bug.png"></img></a>
+</div>
+
+
+
+<p>&nbsp</p>
+
+<div class="bottom">
+    <p>Rhys Elliott 2023. <a href = "mailto:contact@rhyselliott.com?subject = Feedback&body = Message">contact@rhyselliott.com </a></p>
+</div>  
+
+
+<script>
+  /* When the user clicks on the button, 
+  toggle between hiding and showing the dropdown content */
+  function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+  
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+  </script>
+
+</body>
+</html>

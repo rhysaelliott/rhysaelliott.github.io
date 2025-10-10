@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rhys Elliott | All Projects</title>
+    <link rel="stylesheet" href="AllProjects.css?v=1.0.8">
+    <link rel="icon" type="image/x-icon" href="/Images/Icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <meta name="keywords" content="Rhys Elliott, Game Dev, Game Programming">
+    <meta name="description" content="Portfolio for games programmer, Rhys Elliott">
+    <meta name="author" content="Rhys Elliott">
+
+</head>
+<body>
+
+
+    <div class="navbar" id="home">
+        <a href="index.html"><h3>Rhys Elliott</h3></a>
+        <a href="index.html#aboutme"><span>About Me</span></a>
+        <a href="index.html#uni"><span>Main Projects</span></a>
+        <a href="AllProjects.html"><span>All Projects</span></a> 
+        <a href="cv.pdf"><span>CV</span></a> 
+        <a  href="index.html#contact"><span>Contact</span></a>
+
+        <div class="dropdown">
+            <button onclick="myFunction()" class="dropbtn"></button>
+            <div id="myDropdown" class="dropdown-content">
+                <a href="index.html#aboutme"><span>About Me</span></a>
+                <a href="index.html#uni"><span>Main Projects</span></a>
+                <a href="AllProjects.html"><span>All Projects</span></a> 
+                <a href="cv.pdf"><span>CV</span></a> 
+                <a href="index.html#personal"><span>Contact</span></a>
+            </div>
+          </div>
+      </div>
+
+
+<div class="background">
+  <div class="heading"><h1>Volumetric Rendering</h1></div>
+<div class="image"><img src="Images/vulkan-circle.gif"></img></div>
+    <div class="widget">   
+    <ul class="content-tags">
+        <li class="tag">C++</li>
+        <li class="tag-blue">Vulkan</li>
+        <li class="tag-green">Nsight</li>
+    </ul>
+
+    <p>This project formed the basis of my final year dissertation "Implementing and Comparing Real-Time Volumetric and Billboarded Clouds". I implemented 
+    <b>volumetric cloud rendering</b> and <b>instanced billboarded cloud rendering</b> as part of the project. This page will focus on the volumetric implementation. </p>
+
+    <button type="button" onclick="window.location.href='Projects/VolumetricClouds.html';" class="button1">Read More</button>
+    <hr>
+</div>
+
+
+  <div class="heading"><h1>Shrimp Fried Engine</h1></div>
+<div class="image"><img src="Images/shrimpfried.gif"></img></div>
+    <div class="widget">   
+    <ul class="content-tags">
+    <li class="tag">C++</li>
+    <li class="tag-blue">D3D11</li>
+    <li class="tag-blue">PS4</li>
+    </ul>
+
+        <p>  This project was completed as part of the Cross-Platform Engine Development module at <a href="https://www.staffs.ac.uk/">Staffs Uni</a> and involved working with a team 
+  of 8 others to create a 2D game engine that has parity on at least 2 platforms. For this project, I was solely responsible anything graphics related which mostly manifested 
+  in the creation of a graphics abstraction layer as well as additional features that make use of said API. Featuring <b>animation</b> and <b>text rendering</b> </p> 
+
+    <button type="button" onclick="window.location.href='Projects/VolumetricClouds.html';" class="button1">Read More</button>
+    <hr>
+</div>
+
+  <div class="heading"><h1>D3D11 Projects</h1></div>
+<div class="image"><img src="Images/d3d11-circle.jpg"></img></div>
+    <div class="widget">   
+    <ul class="content-tags">
+        <li class="tag">C++</li>
+        <li class="tag">HLSL</li>
+        <li class="tag-blue">D3D11</li>
+    </ul>
+
+          <p>
+    This project was completed as part of the 'Advanced Real-Time Rendering module' at the <a href="https://www.staffs.ac.uk/">University of Staffordshire</a>. 
+    The primary goal of this project was to implement <b>deferred lighting</b> as well as <b>PBR</b>, <b>normal mapping</b> and a variety of post-processing effects 
+    including <b>depth of field</b>, <b>sharpness</b>, <b>chromatic abberation</b> and other <b>colourspace effects</b>.
+    </p>
+
+    <p>This project involved creating a basic rendering pipeline using D3D11 and was completed as part of Staffordshire University's 'Real Time Rendering' module. The pipeline features <b>bloom</b>, <b>water shading using Gerstner
+      waves</b>, <b>transparency</b>, <b>terrain generation</b>, <b>fog</b>, <b>model and texture loading</b> and more.</p>
+
+    <button type="button" onclick="window.location.href='Projects/D3D11Project.html';" class="button1">Read More</button>
+    <hr>
+</div>
+
+
+<div class="heading"><h1>Midnight Taxi</h1></div>
+<div class="image"><img src="Images/midnight_taxi-circle.jpg"></img></div>
+    <div class="widget">   
+    <ul class="content-tags">
+        <li class="tag">Blueprint</li>
+        <li class="tag-green">UE5</li>
+        <li class="tag-orange">Collab</li>
+    </ul>
+
+    <p>Midnight Taxi is a narrative focussed horror/thriller game about being a taxi driver in a suburban town in the Deep South. The game was created in UE5 and I worked on the junior
+      tech team alongside 2 other juniors and 3 seniors. We worked in Blueprint and my main tasks were creating a working SatNav system, creating multiple materials, handling save data, creating the 
+      options menu and faking physics on an actor to be more performant. </p>
+
+    <button type="button" onclick="window.location.href='Projects/MidnightTaxi.html';" class="button1">Read More</button>
+    <hr>
+</div>
+<div class="heading"><h1>Custom Physics Engine</h1></div>
+<div class="image"><img src="Images/physics-circle.gif"></img></div>
+    <div class="widget">   
+    <ul class="content-tags">
+        <li class="tag">C++</li>
+        <li class="tag-blue">D3D11</li>
+    </ul>
+
+    <p>This project involved creating a basic physics engine from scratch in D3D11 using DirectXMath. It features basic <b>collision detection and response between sphere, AABB and OBB colliders</b>, a 
+      <b>particle system</b>, <b>springs</b> and a <b>rigid body</b> physics model. The project ultimately demonstrates the basics of rigid body and point mass physics.</p>
+      <p>&nbsp</p>
+      
+
+    <button type="button" onclick="window.location.href='Projects/CustomPhysicsEngine.html';" class="button1">Read More</button>
+    <hr>
+</div>
+
+<div class="heading"><h1>Low Level Optimisation</h1></div>
+<div class="image"><img src="Images/lowlevel - circle.png"></img></div>
+    <div class="widget">   
+    <ul class="content-tags">
+        <li class="tag">C++</li>
+        <li class="tag-blue">PS4</li>
+        <li class="tag-blue">ImGUI</li>
+    </ul>
+
+    <p>This project focussed on <b>low-level optimisation</b> in <b>C++</b>. I implemented a custom <b>memory manager, memory pools </b> and <b>multithreading</b> via a <b>quadtree</b>. 
+      The project was also ported to <b>PS4</b> where the same multihreaded functionality was recreated.
+    </p>
+    <p>&nbsp</p>
+    <button type="button" onclick="window.location.href='Projects/LowLevelPort.html';" class="button1">Read More</button>
+    <hr>
+</div>
+
+
+    <div class="heading"><h1>Heaven's Blade</h1></div>
+<div class="image"><img src="Images/HeavensBladecircle.png"></img></div>
+    <div class="widget">   
+    <ul class="content-tags">
+      <li class="tag">C#</li>
+      <li class="tag">PHP</li>
+      <li class="tag-green">Unity</li>
+      <li class="tag-orange">MySQL</li>
+    </ul>
+
+    <p>Heaven's Blade is a 2D platformer prototype with a focus on speed and movement that I made for uni over the course of six weeks. The prototype includes an online leaderboard and many 
+      features to create an interesting character controller.   The online leaderboard was built using PHP and MySQL which took up the majority of development time.</p>
+
+    <button type="button" onclick="window.location.href='Projects/HeavensBlade.html';" class="button1">Read More</button>
+
+</div>
+
+
+</div>
+
+
+
+
+<p>&nbsp</p>
+
+<h4>Social Media</h4>
+<div class="social">
+  <a href="https://twitter.com/rhyselliottdev target="_blank""><img src="../Social/twitter.png"></img></a>
+  <a href="https://github.com/rhysaelliott" target="_blank"><img src="../Social/github-mark-light.png"></img></a>
+  <a href="https://www.linkedin.com/in/rhys-elliott-5a9b99276/" target="_blank"><img src="../Social/LI-In-Bug.png"></img></a>
+</div>
+
+
+
+<p>&nbsp</p>
+<p>&nbsp</p>
+<p>&nbsp</p>
+<p>&nbsp</p>
+<p>&nbsp</p>
+<p>&nbsp</p>
+<div class="bottom">
+  <p>Rhys Elliott 2023. <a href = "mailto:contact@rhyselliott.com?subject = Feedback&body = Message">contact@rhyselliott.com </a></p>
+</div>  
+
+
+
+<script>
+    /* When the user clicks on the button, 
+    toggle between hiding and showing the dropdown content */
+    function myFunction() {
+      document.getElementById("myDropdown").classList.toggle("show");
+    }
+    
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropbtn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+    }
+    </script>
+
+</body>
+</html>

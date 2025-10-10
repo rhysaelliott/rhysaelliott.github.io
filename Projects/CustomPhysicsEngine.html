@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rhys Elliott | Custom Physics Engine</title>
+    <link rel="stylesheet" href="Project.css?v=1.0.0">
+    <link rel="icon" type="image/x-icon" href="/Images/Icon.png">
+    <link href="prism.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <meta name="keywords" content="Rhys Elliott, Game Dev, Game Programming">
+    <meta name="description" content="Portfolio for games programmer, Rhys Elliott">
+    <meta name="author" content="Rhys Elliott">
+
+</head>
+<body>
+
+  <script src="prism.js"></script> 
+
+<div class="navbar" id="home">
+  <a href="../index.html"><h3>Rhys Elliott</h3></a>
+  <a href="../index.html#aboutme"><span>About Me</span></a>
+  <a href="../index.html#uni"><span>Main Projects</span></a>
+  <a href="../AllProjects.html"><span>All Projects</span></a> 
+  <a href="../cv.pdf"><span>CV</span></a> 
+  <a  href="../index.html#contact"><span>Contact</span></a>
+
+  <div class="dropdown">
+    <button onclick="myFunction()" class="dropbtn"></button>
+    <div id="myDropdown" class="dropdown-content">
+        <a href="../index.html#aboutme"><span>About Me</span></a>
+        <a href="../index.html#uni"><span>Main Projects</span></a>
+        <a href="../AllProjects.html"><span>All Projects</span></a> 
+        <a href="../cv.pdf"><span>CV</span></a> 
+        <a href="../index.html#personal"><span>Contact</span></a>
+    </div>
+  </div>
+</div>
+
+<video id="myVideo"  autoplay loop muted>
+    <source src="Videos/physics.mp4" type="video/mp4">
+    <source src="movie.ogg" type="video/ogg">
+  Your browser does not support the video tag.
+</video> 
+
+<div class="background">
+<h1>Custom Physics Engine</h1>
+
+<div class="widget">   
+  <ul class="content-tags">
+    <li class="tag">C++</li>
+    <li class="tag">HLSL</li>
+    <li class="tag-blue">D3D11</li>
+    <li class="tag-green">Render Doc</li>
+  </ul>
+
+<p>
+This project involved creating a basic physics engine from scratch in D3D11 using DirectXMath. It features basic <b>collision detection and response between sphere, AABB and OBB colliders</b>, a 
+<b>particle system</b>, <b>springs</b> and a <b>rigid body</b> physics model. The project ultimately demonstrates the basics of rigid body and point mass physics. See a demonstration 
+below: 
+</p>
+<div class="youtube"><iframe width="560" height="315" src="https://www.youtube.com/embed/NSea22ZDLok?si=4knWjXuWQPbuy8as" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> </div>
+
+
+<h2>OBB Colliders</h2>
+<p>Implementing OBB colliders was the first tough problem I encountered after getting the basic colliders down. OBB colliders should be able to rotate and detect collisions on any axes. 
+  In order to achieve this, a series of more rigorous checks must be performed compared to AABB or sphere colliders known as separating axis theorem. These checks involve 
+projecting vertices of the collider onto positive and negative normals of each collider. If no 
+overlaps are found then there is no collision and the function returns. If all the tests pass 
+then a collision has been detected, the penetration depth is calculated and collision resolution 
+occurs. Collisions are resolved by checking each object againt one another to see if theyre 
+colliding. If they are then the penetration is resolved and the relevant impulses are applied.  
+The code that handles collision resolution can be seen below: </p>
+<pre>
+  <code class="language-cpp line-numbers prism-okaidia">
+    for (size_t i = 0; i < _gameObjects.size(); i++)
+    {
+      for (size_t j = 0; j < _gameObjects.size(); j++)
+      {
+        if (i <= j) continue;
+        if (!(_gameObjects[i]->GetPhysicsModel()->IsCollideable() && _gameObjects[j]->GetPhysicsModel()->IsCollideable())) continue;
+        CollisionManifold manifold = CollisionManifold();
+        if (!_gameObjects[i]->GetPhysicsModel()->GetCollider()->CollidesWith(*_gameObjects[j]->GetPhysicsModel()->GetCollider(), manifold)) continue;
+    
+        vector3 relativeV = _gameObjects[i]->GetPhysicsModel()->GetVelocity() - _gameObjects[j]->GetPhysicsModel()->GetVelocity();
+        vector3 collisionNormal = manifold.collisionNormal;
+    
+        float restitution = (_gameObjects[j]->GetPhysicsModel()->GetCollider()->GetRestitution() + _gameObjects[i]->GetPhysicsModel()->GetCollider()->GetRestitution()) * 0.5f;
+        float inverseMassA = _gameObjects[i]->GetPhysicsModel()->GetInverseMass();
+        float inverseMassB = _gameObjects[j]->GetPhysicsModel()->GetInverseMass();
+
+        vector3 penetrationResolutionA = collisionNormal * (manifold.points[0].penetrationDepth * inverseMassA);
+        vector3 penetrationResolutionB = collisionNormal * (manifold.points[0].penetrationDepth * inverseMassB);
+    
+        penetrationResolutionA *= 7.f;
+        penetrationResolutionB *= 7.f;
+          if (fabs(Vector::Magnitude(penetrationResolutionA)) > 1.0f)
+            penetrationResolutionA = Vector::Normalise(penetrationResolutionA);
+          if (fabs(Vector::Magnitude(penetrationResolutionB)) > 1.0f)
+            penetrationResolutionB = Vector::Normalise(penetrationResolutionB);
+    
+        if (Vector::DotProduct(relativeV, collisionNormal) > 0.f)
+        {
+          _gameObjects[j]->GetPhysicsModel()->ApplyImpulse(penetrationResolutionB);
+          _gameObjects[i]->GetPhysicsModel()->ApplyImpulse(vector3() - penetrationResolutionA);
+        }
+        else if(Vector::DotProduct(relativeV, collisionNormal) < 0.f)
+        {
+          _gameObjects[i]->GetPhysicsModel()->ApplyImpulse(penetrationResolutionA);
+          _gameObjects[j]->GetPhysicsModel()->ApplyImpulse(vector3() - penetrationResolutionB);
+        }
+    
+        float totalV = -(1 + restitution) * Vector::DotProduct(relativeV, collisionNormal);
+        float impulse = totalV / (inverseMassA + inverseMassB);
+        
+        _gameObjects[i]->GetPhysicsModel()->ApplyImpulse((collisionNormal * impulse * inverseMassA));
+        _gameObjects[j]->GetPhysicsModel()->ApplyImpulse(vector3() - (collisionNormal * impulse * inverseMassB));
+      }
+    }
+  </code>
+</pre>
+
+<h2>Particle System</h2>
+  <p>The particle system works via a particle manager which can create particle system instances which manage individual particles. Forces can be set to affect 
+    the particles in a system by collating the desired force generators into an array and including it as a parameter in particle system creation. The force generators 
+    I have created so far, which you can see acting in the demo, are a burst force, a vortex force and a wind force. I have made these inheret from a base force generator 
+    class so it would be trivial to expand this system with different forces. When creating a system, the other options available include: the mesh rendered, the location of the 
+    system, the number of particles, the time for the system to reset, the time until the system destroys itself, the delay between particle spawns, the variance in spawn positions 
+    of individual particles, whether the system loops, the mass of each particle, whether friction is applied to the system, whether gravity is applied and whether gravity is inverted. 
+    Overall, this basic particle system allowed me to experiment with generating different forces to create different and interesting effects. 
+  </p>
+
+
+
+
+  <h2>Who Did What?</h2>
+  <p>Original Framework by <a href="https://www.staffs.ac.uk/"></a>Staffs Uni</p>
+
+
+  <h2>When Was it Made?</h2>
+  <p>This project was worked on between late January to early March 2024</p>
+  <h2>What Went Well?</h2>
+  <p>
+    I believe that I was able to implement a wide range of basic physics features to a good degree of accuracy. In particular, I think that the OBB collision detection 
+    is an extension of what was expected of me and so too was the particle system. I think both leave room for improvement at a later date which my implementations allow for.
+  </p>
+  <h2>What Could Be Better?</h2>
+  <p>
+    There are multiple aspects that could be improved upon. These include better collision resolution that take into account the point on the collider where a collision 
+    occurred, refactoring the particle system to take advantage of both the compute shader and GPU instancing and implementing some broad phase collision detection algorithm.
+     I would also change the OBB collision detection to perform better checks which I found out about after completing the module. 
+  </p>
+
+
+
+</div>
+</div>
+
+<p>&nbsp</p>
+
+<h4>Social Media</h4>
+<div class="social">
+  <a href="https://twitter.com/rhyselliottdev" target="_blank"><img src="../Social/twitter.png"></img></a>
+  <a href="https://github.com/rhysaelliott" target="_blank"><img src="../Social/github-mark.png"></img></a>
+  <a href="https://www.linkedin.com/in/rhys-elliott-5a9b99276/" target="_blank"><img src="../Social/LI-In-Bug.png"></img></a>
+</div>
+
+
+
+<p>&nbsp</p>
+
+<div class="bottom">
+    <p>Rhys Elliott 2023. <a href = "mailto:contact@rhyselliott.com?subject = Feedback&body = Message">contact@rhyselliott.com </a></p>
+</div>  
+
+
+<script>
+  /* When the user clicks on the button, 
+  toggle between hiding and showing the dropdown content */
+  function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+  
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+  </script>
+
+</body>
+</html>
