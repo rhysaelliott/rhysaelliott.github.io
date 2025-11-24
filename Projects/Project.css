@@ -99,6 +99,7 @@ text-decoration: underline;
   margin-left: 5px;
   border-radius: 15px;
   min-width:20px;
+  text-align: center;
   }
   .tag-orange
 {
@@ -110,6 +111,7 @@ text-decoration: underline;
   opacity:0.9;
   position:relative;
   min-width:20px;
+    text-align: center;
 }
 .tag-green
 {
@@ -121,6 +123,7 @@ text-decoration: underline;
   opacity:0.9;
   position:relative;
   min-width:20px;
+    text-align: center;
 }
 .tag-blue
 {
@@ -132,6 +135,7 @@ text-decoration: underline;
   opacity:0.9;
   position:relative;
   min-width:20px;
+    text-align: center;
 }
 
   .youtube

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rhys Elliott | Bare Metal PS1</title>
+    <link rel="stylesheet" href="Project.css?v=1.0.0">
+    <link rel="icon" type="image/x-icon" href="/Images/Icon.png">
+    <link href="prism.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> 
+    <meta name="keywords" content="Rhys Elliott, Game Dev, Game Programming">
+    <meta name="description" content="Portfolio for games programmer, Rhys Elliott">
+    <meta name="author" content="Rhys Elliott">
+
+</head>
+<body>
+
+  <script src="prism.js"></script> 
+
+<div class="navbar" id="home">
+  <a href="../index.html"><h3>Rhys Elliott</h3></a>
+  <a href="../index.html#aboutme"><span>About Me</span></a>
+  <a href="../index.html#uni"><span>Main Projects</span></a>
+  <a href="../AllProjects.html"><span>All Projects</span></a> 
+  <a href="../cv.pdf"><span>CV</span></a> 
+  <a  href="../index.html#contact"><span>Contact</span></a>
+
+  <div class="dropdown">
+    <button onclick="myFunction()" class="dropbtn"></button>
+    <div id="myDropdown" class="dropdown-content">
+        <a href="../index.html#aboutme"><span>About Me</span></a>
+        <a href="../index.html#uni"><span>Main Projects</span></a>
+        <a href="../AllProjects.html"><span>All Projects</span></a> 
+        <a href="../cv.pdf"><span>CV</span></a> 
+        <a href="../index.html#personal"><span>Contact</span></a>
+    </div>
+  </div>
+</div>
+
+<video id="myVideo"  autoplay loop muted>
+    <source src="Videos/psx.mp4" type="video/mp4">
+    <source src="movie.ogg" type="video/ogg">
+  Your browser does not support the video tag.
+</video> 
+
+<div class="background">
+<h1>Bare-Metal PS1</h1>
+
+<div class="widget">   
+  <ul class="content-tags">
+    <li class="tag">C</li>
+    <li class="tag-blue">PS1</li>
+    <li class="tag-blue">MIPS</li>
+
+  </ul>
+
+<p>This project focussed on creating <b>OBB Collision</b> on the <b>PS1</b> 
+without the use of a library in <b>C</b>. The goal of the project was to effectively port 
+a physics and collision project I had completed in my second year of uni.
+</p>
+
+
+
+<div class="youtube"><iframe width="560" height="315" src="https://www.youtube.com/embed/jGezDi6CHeU?si=sygtVIxShRYhTFIh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> </div>
+
+
+
+<h2>PS1 Programming</h2>
+
+ <p>There are multiple ways to program the PS1, most involve using SDKs (either created 
+	by Sony or open-source) but for this project I wanted to take a bare-metal approach.
+This involved using a GCC toolchain that targets the MIPS architecture. To begin with, 
+I replicated the examples on <a href = "https://github.com/spicyjpeg/ps1-bare-metal/tree/main">spicyjpeg's ps1-bare-metal</a>
+github repo. This taught me how to render a cube, make use of textures and capture controller 
+input amongst other things.
+
+<p>In systems like the PS1, components like the GPU aren't controlled through commands but 
+through writing bit patterns into special memory mapped registers. This approach means that 
+the GPU can read instructions from RAM without the CPU needing to feed it which accelerates 
+graphic performance. Adjusting to this was one of the greatest difficulties in porting.
+</p>
+<p>The system does not feature a floating point computation unit. As such, any math that 
+requires fractional precision, such as rendering or physics calculations, must use fixed-point
+math instead. To make this easier I made various helper macros. The format used for fixed-point 
+math uses 12 bits for fractional values to follow the format of the GTE (mentioned later).
+</p>
+<p>Examples and their uses can be seen below:</p>
+<pre>
+	<code class="language-c line-numbers prism-okaidia">
+typedef int64_t fixed_point_t;
+#define FIXED_POINT_FRACTIONAL_BITS 12
+#define ONE (1<<12)
+#define FP_MUL(a, b) (((a) * (b)) >> FIXED_POINT_FRACTIONAL_BITS)
+#define FP_DIV(a, b) (((a) << FIXED_POINT_FRACTIONAL_BITS) / (b))
+Projection ProjectOntoAxis(OBBCollider* obb, Vector3 axis)
+{
+    Vector3 halfExtents;
+    halfExtents.x = FP_DIV((obb->_maxCorner.x - obb->_minCorner.x), 2 * ONE);
+    halfExtents.y = FP_DIV((obb->_maxCorner.y - obb->_minCorner.y), 2 * ONE);
+    halfExtents.z = FP_DIV((obb->_maxCorner.z - obb->_minCorner.z), 2 * ONE);
+
+    Vector3 centre;
+    centre.x = FP_DIV((obb->_minCorner.x + obb->_maxCorner.x), 2 * ONE);
+    centre.y = FP_DIV((obb->_minCorner.y + obb->_maxCorner.y), 2 * ONE);
+    centre.z = FP_DIV((obb->_minCorner.z + obb->_maxCorner.z), 2 * ONE);
+
+    GTEMatrix rotMatrix = obb->_transform->rotationMatrix;
+
+    Vector3 normal = axis;
+
+    
+    Vector3 worldCentre = Vec3Transform(centre,obb->_transform->position);
+    worldCentre.x*=ONE;
+    worldCentre.y*=ONE;
+    worldCentre.z *=ONE;
+    Vector3 localVertices[8];
+    int index = 0;
+    for(int x = -ONE; x<=ONE; x+=2*ONE){
+        for(int y=-ONE;y<=ONE;y+=2*ONE){
+            for(int z =-ONE;z<=ONE;z+=2*ONE){
+
+                localVertices[index] = (Vector3){FP_MUL(x,halfExtents.x), FP_MUL(y,halfExtents.y), FP_MUL(z,halfExtents.z)};
+                index++;
+            }
+        }
+    }
+
+    for(int i = 0; i<8;i++)
+    {
+        localVertices[i] = Vec3TransformNormal(localVertices[i], rotMatrix);
+    }
+
+    normal = Vec3Normalise(normal);
+
+    fixed_point_t minProj = INT64_MAX;
+    fixed_point_t maxProj = -INT64_MAX;
+
+    for(int i=0; i<8;i++)
+    {
+        Vector3 vertex = localVertices[i];
+        fixed_point_t proj = Vec3DotProduct(vertex, normal);
+        minProj = min(minProj, proj);
+        maxProj = max(maxProj, proj);
+    }
+
+    fixed_point_t projectedCentre = -Vec3DotProduct(worldCentre, normal);
+    fixed_point_t min = (projectedCentre + minProj);
+    fixed_point_t max = (projectedCentre + maxProj); 
+    printf("keep: %d\n", projectedCentre);
+    printf("%d", min);
+    printf("%d", max);
+    printf("%d", minProj);
+    printf("%d", maxProj);
+
+    Projection result;
+    result.max = max;
+    result.min = min;
+    return result;
+}
+  
+	</code>
+</pre>
+
+<p>The PS1 does not support textures larger than 256x256, additionally these textures must 
+be 4-bit or 8-bit. In order to replicate the look of my old project I had to convert the 
+textures used then to fit these restraints. Unlike modern APIs, the PS1 GPU consumes a linked list of commands constructed each frame.
+I had to manually form each packet (quad, sprite, texture block) and link them
+through the Ordering Table so the GPU could render them front-to-back.</p>
+<p>The PS1 has a special coprocessor for 3D graphics calculations known as the Geometry 
+	Transformation Unit (GTE) which is not memory-mapped but accessed through inline assembly
+instructions. I used the GTE for both rendering and some physics math.
+
+</p>
+<h2>Physics & Collision</h2>
+<p>The physics and collision in my project is entirely based on my 2nd year university project. 
+This includes basic acceleration-based force accumulation, friction, drag and OBB collision 
+detection (using SAT) and resolution. The major challenge here was implementing fixed-point math 
+and also making use of the GTE in place of the SIMD used in DirectXMath.
+</p>
+
+
+
+
+
+
+
+<h2>Resources Used:</h2>
+<p> psx-spx by <a href="https://psx-spx.consoledev.net/">Martin "nocash" Korth</a></p>
+<p> ps1-bare-metal by <a href="https://github.com/spicyjpeg/ps1-bare-metal/tree/main">spicyjpeg</a></p>
+<p> PSXProject by <a href="https://github.com/Rhys-Baker/PSXProject/tree/main">Rhys-Baker</a></p>
+
+
+<h2>When Was it Made?</h2>
+<p>This project was worked on from October 2025 - November 2025</p>
+
+
+
+</div>
+</div>
+
+<p>&nbsp</p>
+
+
+<div class="social">
+  <a href="https://twitter.com/rhyselliottdev" target="_blank"><img src="../Social/twitter.png"></img></a>
+  <a href="https://github.com/rhysaelliott" target="_blank"><img src="../Social/github-mark-light.png"></img></a>
+  <a href="https://www.linkedin.com/in/rhys-elliott-5a9b99276/" target="_blank"><img src="../Social/LI-In-Bug.png"></img></a>
+</div>
+
+
+
+<p>&nbsp</p>
+
+<div class="bottom">
+    <p>Rhys Elliott 2025. <a  href = "mailto:rhyselliottdev@protonmail.com?subject = Feedback&body = Message">rhyselliottdev@protonmail.com </a></p>
+</div>  
+
+
+<script>
+  /* When the user clicks on the button, 
+  toggle between hiding and showing the dropdown content */
+  function myFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+  
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+  </script>
+
+</body>
+</html>
